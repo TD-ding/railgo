@@ -1,0 +1,118 @@
+// RailGo schema. Provider is SQLite for local/sandbox dev; PG-compatible shape.
+// Enums are modeled as String with documented allowed values so the same schema
+// runs on SQLite and Postgres without edits. Money is integer cents.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  phone     String   @unique
+  name      String?
+  orders    Order[]
+  createdAt DateTime @default(now())
+}
+
+model OtpCode {
+  id        String   @id @default(cuid())
+  phone     String
+  code      String
+  expiresAt DateTime
+  consumed  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([phone])
+}
+
+model City {
+  id       String    @id @default(cuid())
+  name     String
+  pinyin   String
+  code     String    @unique
+  stations Station[]
+}
+
+model Station {
+  id       String  @id @default(cuid())
+  name     String
+  code     String  @unique
+  cityId   String
+  city     City    @relation(fields: [cityId], references: [id])
+  depTrips Trip[]  @relation("DepStation")
+  arrTrips Trip[]  @relation("ArrStation")
+}
+
+model Trip {
+  id           String          @id @default(cuid())
+  trainNo      String
+  date         DateTime
+  depStationId String
+  arrStationId String
+  depStation   Station         @relation("DepStation", fields: [depStationId], references: [id])
+  arrStation   Station         @relation("ArrStation", fields: [arrStationId], references: [id])
+  departAt     DateTime
+  arriveAt     DateTime
+  inventories  SeatInventory[]
+  orderItems   OrderItem[]
+
+  @@index([date, depStationId, arrStationId])
+}
+
+// seatClass allowed values: "BUSINESS" | "FIRST" | "SECOND"
+model SeatInventory {
+  id         String @id @default(cuid())
+  tripId     String
+  trip       Trip   @relation(fields: [tripId], references: [id])
+  seatClass  String
+  priceCents Int
+  total      Int
+  remaining  Int
+
+  @@unique([tripId, seatClass])
+}
+
+// status allowed values: "PENDING" | "PAID" | "CANCELLED"
+model Order {
+  id            String      @id @default(cuid())
+  userId        String
+  user          User        @relation(fields: [userId], references: [id])
+  status        String      @default("PENDING")
+  totalCents    Int
+  contactName   String
+  contactPhone  String
+  holdExpiresAt DateTime?
+  items         OrderItem[]
+  payment       Payment?
+  createdAt     DateTime    @default(now())
+
+  @@index([userId, createdAt])
+}
+
+model OrderItem {
+  id            String @id @default(cuid())
+  orderId       String
+  order         Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  tripId        String
+  trip          Trip   @relation(fields: [tripId], references: [id])
+  seatClass     String
+  priceCents    Int
+  passengerName String
+  passengerIdNo String
+}
+
+// status allowed values: "INITIATED" | "SUCCEEDED" | "FAILED" | "REFUNDED"
+model Payment {
+  id          String   @id @default(cuid())
+  orderId     String   @unique
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  status      String   @default("INITIATED")
+  amountCents Int
+  attempts    Int      @default(0)
+  createdAt   DateTime @default(now())
+}

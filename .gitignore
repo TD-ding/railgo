@@ -1,0 +1,46 @@
+# dependencies
+node_modules/
+.pnpm-store/
+
+# next.js
+.next/
+out/
+build/
+dist/
+
+# local env files
+.env
+.env*.local
+
+# database
+prisma/dev.db
+prisma/dev.db-journal
+*.db
+*.db-journal
+
+# testing
+coverage/
+
+# misc
+.DS_Store
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ide
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# deliverable artifact (generated for A2A handoff)
+deliverable/
+
+# playwright
+.playwright-mcp/
+
+# claude code (local agent config, skills, sessions)
+.claude/
