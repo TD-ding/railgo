@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { api } from "@/lib/client";
 import { Button, Field, Header, Card } from "@/components/ui";
 import { validatePhone, validateOtp } from "@/lib/validation";
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
   const params = useSearchParams();
   const next = params.get("next") || "/";
@@ -106,5 +106,13 @@ export default function LoginPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<Header title="登录 RailGo" sub="使用手机号 + 验证码登录" />}>
+      <LoginForm />
+    </Suspense>
   );
 }
