@@ -1,0 +1,96 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+html {
+  /* honor user font-size preferences; never block zoom */
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: #eef0f4;
+  color: #1a1a1a;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/*
+ * Mobile-first phone column. On small screens it's full-bleed; from sm up it
+ * becomes a centered device frame so desktop review looks intentional.
+ */
+.app-shell {
+  position: relative;
+  max-width: 28rem;
+  margin: 0 auto;
+  min-height: 100dvh;
+  background: #f4f5f7;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 640px) {
+  body {
+    /* subtle ambient backdrop behind the framed device */
+    background:
+      radial-gradient(1200px 600px at 50% -10%, #dfe7f5 0%, #eef0f4 55%);
+  }
+  .app-shell {
+    margin: 2rem auto;
+    min-height: auto;
+    height: calc(100dvh - 4rem);
+    border-radius: 1.75rem;
+    box-shadow:
+      0 1px 2px rgba(16, 24, 40, 0.06),
+      0 12px 40px rgba(16, 24, 40, 0.16);
+    overflow: hidden;
+  }
+}
+
+/* The fixed bottoms (tab bar, sticky CTA) align to the shell width. */
+.shell-fixed {
+  position: fixed;
+  inset-inline: 0;
+  margin-inline: auto;
+  max-width: 28rem;
+}
+
+@media (min-width: 640px) {
+  /* Inside the framed device, anchor bottoms to the frame, not the viewport. */
+  .shell-fixed {
+    position: absolute;
+  }
+}
+
+/* Safe-area padding for notched devices. */
+.safe-bottom {
+  padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
+}
+
+/* Hide horizontal scrollbars on the date strip without losing scrollability. */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Consistent, visible keyboard focus across the app. */
+:where(a, button, input, select, [tabindex]):focus-visible {
+  outline: 2px solid #0d6efd;
+  outline-offset: 2px;
+  border-radius: 0.4rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
