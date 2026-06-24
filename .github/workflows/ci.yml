@@ -42,10 +42,13 @@ jobs:
       
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      
+
+      - name: Generate Prisma client
+        run: pnpm prisma generate
+
       - name: Type check
         run: pnpm exec tsc --noEmit
-      
+
       - name: Setup database
         run: pnpm prisma db push --skip-generate
       
