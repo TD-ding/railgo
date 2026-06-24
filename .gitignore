@@ -41,3 +41,6 @@ deliverable/
 
 # playwright
 .playwright-mcp/
+
+# claude code (local agent config, skills, sessions)
+.claude/
